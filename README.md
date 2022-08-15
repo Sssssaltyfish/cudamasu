@@ -1,6 +1,6 @@
 # cudamasu
 
-A simple c++ header that stops intellisense from complainling about cuda stuffs.
+A simple c++ header that stops intellisense from complaining about cuda stuffs.
 
 ## Usage
 
@@ -15,7 +15,7 @@ CompileFlags:
     Add: ["-isystem<where you placed the header>", "--include=cudamasu.h"]
 ```
 
-In most cases `clangd` is capable of handling cuda codes, and in fact this header is modified on the exact basis of clang cuda intrinsic headers.
-The reason I made this hacky thing is that some day I found intellisense of cuda code was not working on my another machine, and that sucks.
+In most cases `clangd` is capable of handling cuda codes, and in fact this header is modified on the very basis of clang cuda intrinsic headers.
+The reason I made this hacky thing is that some day I found intellisense of cuda code was not working on another machine of mine, and that sucks.
 
-This header is not fully tested on clangd, and not tested AT ALL on other language servers. Any PR or issue (though I think there would be none) is welcome.
+This header is not fully tested on clangd, and not tested AT ALL on any other language servers. Any PR or issue (though I think there would be none) is welcome.
