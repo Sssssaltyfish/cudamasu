@@ -4,8 +4,10 @@
 
 #ifndef __CUDACC__
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 
 //* define compile options
 #define __device__
@@ -13,7 +15,8 @@
 #define __host__
 #define __shared__
 
-#define __DEVICE__ inline __attribute__((always_inline)) __attribute__((weak)) __device__
+#define __DEVICE__                                                             \
+  inline __attribute__((always_inline)) __attribute__((weak)) __device__
 
 //* define predicate functions
 __DEVICE__ unsigned int __isGlobal(const void *p);
@@ -26,8 +29,6 @@ extern "C" {
 // Device-side CUDA system calls.
 // http://docs.nvidia.com/cuda/ptx-writers-guide-to-interoperability/index.html#system-calls
 __device__ int vprintf(const char *, const char *);
-__device__ void free(void *) __attribute((nothrow));
-__device__ void *malloc(size_t) __attribute((nothrow)) __attribute__((malloc));
 
 // __assertfail() used to have a `noreturn` attribute. Unfortunately that
 // contributed to triggering the longstanding bug in ptxas when assert was used
@@ -47,251 +48,6 @@ __device__ static inline void __assert_fail(const char *__message,
 // device-side declaration for it.
 __device__ int printf(const char *, ...);
 } // extern "C"
-
-// We also need device-side std::malloc and std::free.
-namespace std {
-__device__ static inline void free(void *__ptr);
-__device__ static inline void *malloc(size_t __size);
-} // namespace std
-
-//* define math functions
-__DEVICE__ long abs(long);
-__DEVICE__ long long abs(long long);
-__DEVICE__ double abs(double);
-__DEVICE__ float abs(float);
-__DEVICE__ int abs(int);
-__DEVICE__ double acos(double);
-__DEVICE__ float acos(float);
-__DEVICE__ double acosh(double);
-__DEVICE__ float acosh(float);
-__DEVICE__ double asin(double);
-__DEVICE__ float asin(float);
-__DEVICE__ double asinh(double);
-__DEVICE__ float asinh(float);
-__DEVICE__ double atan2(double, double);
-__DEVICE__ float atan2(float, float);
-__DEVICE__ double atan(double);
-__DEVICE__ float atan(float);
-__DEVICE__ double atanh(double);
-__DEVICE__ float atanh(float);
-__DEVICE__ double cbrt(double);
-__DEVICE__ float cbrt(float);
-__DEVICE__ double ceil(double);
-__DEVICE__ float ceil(float);
-__DEVICE__ double copysign(double, double);
-__DEVICE__ float copysign(float, float);
-__DEVICE__ double cos(double);
-__DEVICE__ float cos(float);
-__DEVICE__ double cosh(double);
-__DEVICE__ float cosh(float);
-__DEVICE__ double erfc(double);
-__DEVICE__ float erfc(float);
-__DEVICE__ double erf(double);
-__DEVICE__ float erf(float);
-__DEVICE__ double exp2(double);
-__DEVICE__ float exp2(float);
-__DEVICE__ double exp(double);
-__DEVICE__ float exp(float);
-__DEVICE__ double expm1(double);
-__DEVICE__ float expm1(float);
-__DEVICE__ double fabs(double);
-__DEVICE__ float fabs(float);
-__DEVICE__ double fdim(double, double);
-__DEVICE__ float fdim(float, float);
-__DEVICE__ double floor(double);
-__DEVICE__ float floor(float);
-__DEVICE__ double fma(double, double, double);
-__DEVICE__ float fma(float, float, float);
-__DEVICE__ double fmax(double, double);
-__DEVICE__ float fmax(float, float);
-__DEVICE__ double fmin(double, double);
-__DEVICE__ float fmin(float, float);
-__DEVICE__ double fmod(double, double);
-__DEVICE__ float fmod(float, float);
-__DEVICE__ int fpclassify(double);
-__DEVICE__ int fpclassify(float);
-__DEVICE__ double frexp(double, int *);
-__DEVICE__ float frexp(float, int *);
-__DEVICE__ double hypot(double, double);
-__DEVICE__ float hypot(float, float);
-__DEVICE__ int ilogb(double);
-__DEVICE__ int ilogb(float);
-#ifdef _MSC_VER
-__DEVICE__ bool isfinite(long double);
-#endif
-__DEVICE__ bool isfinite(double);
-__DEVICE__ bool isfinite(float);
-__DEVICE__ bool isgreater(double, double);
-__DEVICE__ bool isgreaterequal(double, double);
-__DEVICE__ bool isgreaterequal(float, float);
-__DEVICE__ bool isgreater(float, float);
-#ifdef _MSC_VER
-__DEVICE__ bool isinf(long double);
-#endif
-__DEVICE__ bool isinf(double);
-__DEVICE__ bool isinf(float);
-__DEVICE__ bool isless(double, double);
-__DEVICE__ bool islessequal(double, double);
-__DEVICE__ bool islessequal(float, float);
-__DEVICE__ bool isless(float, float);
-__DEVICE__ bool islessgreater(double, double);
-__DEVICE__ bool islessgreater(float, float);
-#ifdef _MSC_VER
-__DEVICE__ bool isnan(long double);
-#endif
-__DEVICE__ bool isnan(double);
-__DEVICE__ bool isnan(float);
-__DEVICE__ bool isnormal(double);
-__DEVICE__ bool isnormal(float);
-__DEVICE__ bool isunordered(double, double);
-__DEVICE__ bool isunordered(float, float);
-__DEVICE__ long labs(long);
-__DEVICE__ double ldexp(double, int);
-__DEVICE__ float ldexp(float, int);
-__DEVICE__ double lgamma(double);
-__DEVICE__ float lgamma(float);
-__DEVICE__ long long llabs(long long);
-__DEVICE__ long long llrint(double);
-__DEVICE__ long long llrint(float);
-__DEVICE__ double log10(double);
-__DEVICE__ float log10(float);
-__DEVICE__ double log1p(double);
-__DEVICE__ float log1p(float);
-__DEVICE__ double log2(double);
-__DEVICE__ float log2(float);
-__DEVICE__ double logb(double);
-__DEVICE__ float logb(float);
-__DEVICE__ double log(double);
-__DEVICE__ float log(float);
-__DEVICE__ long lrint(double);
-__DEVICE__ long lrint(float);
-__DEVICE__ long lround(double);
-__DEVICE__ long lround(float);
-__DEVICE__ long long llround(float); // No llround(double).
-__DEVICE__ double modf(double, double *);
-__DEVICE__ float modf(float, float *);
-__DEVICE__ double nan(const char *);
-__DEVICE__ float nanf(const char *);
-__DEVICE__ double nearbyint(double);
-__DEVICE__ float nearbyint(float);
-__DEVICE__ double nextafter(double, double);
-__DEVICE__ float nextafter(float, float);
-__DEVICE__ double pow(double, double);
-__DEVICE__ double pow(double, int);
-__DEVICE__ float pow(float, float);
-__DEVICE__ float pow(float, int);
-__DEVICE__ double remainder(double, double);
-__DEVICE__ float remainder(float, float);
-__DEVICE__ double remquo(double, double, int *);
-__DEVICE__ float remquo(float, float, int *);
-__DEVICE__ double rint(double);
-__DEVICE__ float rint(float);
-__DEVICE__ double round(double);
-__DEVICE__ float round(float);
-__DEVICE__ double scalbln(double, long);
-__DEVICE__ float scalbln(float, long);
-__DEVICE__ double scalbn(double, int);
-__DEVICE__ float scalbn(float, int);
-#ifdef _MSC_VER
-__DEVICE__ bool signbit(long double);
-#endif
-__DEVICE__ bool signbit(double);
-__DEVICE__ bool signbit(float);
-__DEVICE__ double sin(double);
-__DEVICE__ float sin(float);
-__DEVICE__ double sinh(double);
-__DEVICE__ float sinh(float);
-__DEVICE__ double sqrt(double);
-__DEVICE__ float sqrt(float);
-__DEVICE__ double tan(double);
-__DEVICE__ float tan(float);
-__DEVICE__ double tanh(double);
-__DEVICE__ float tanh(float);
-__DEVICE__ double tgamma(double);
-__DEVICE__ float tgamma(float);
-__DEVICE__ double trunc(double);
-__DEVICE__ float trunc(float);
-
-// We need to define these overloads in exactly the namespace our standard
-// library uses (including the right inline namespace), otherwise they won't be
-// picked up by other functions in the standard library (e.g. functions in
-// <complex>).  Thus the ugliness below.
-namespace std {
-
-using ::abs; // NOLINT
-using ::acos; // NOLINT
-using ::acosh; // NOLINT
-using ::asin; // NOLINT
-using ::asinh; // NOLINT
-using ::atan; // NOLINT
-using ::atan2; // NOLINT
-using ::atanh; // NOLINT
-using ::cbrt; // NOLINT
-using ::ceil; // NOLINT
-using ::copysign; // NOLINT
-using ::cos; // NOLINT
-using ::cosh; // NOLINT
-using ::erf; // NOLINT
-using ::erfc; // NOLINT
-using ::exp; // NOLINT
-using ::exp2; // NOLINT
-using ::expm1; // NOLINT
-using ::fabs; // NOLINT
-using ::fdim; // NOLINT
-using ::floor; // NOLINT
-using ::fma; // NOLINT
-using ::fmax; // NOLINT
-using ::fmin; // NOLINT
-using ::fmod; // NOLINT
-using ::fpclassify; // NOLINT
-using ::frexp; // NOLINT
-using ::hypot; // NOLINT
-using ::ilogb; // NOLINT
-using ::isfinite; // NOLINT
-using ::isgreater; // NOLINT
-using ::isgreaterequal; // NOLINT
-using ::isinf; // NOLINT
-using ::isless; // NOLINT
-using ::islessequal; // NOLINT
-using ::islessgreater; // NOLINT
-using ::isnan; // NOLINT
-using ::isnormal; // NOLINT
-using ::isunordered; // NOLINT
-using ::labs; // NOLINT
-using ::ldexp; // NOLINT
-using ::lgamma; // NOLINT
-using ::llabs; // NOLINT
-using ::llrint; // NOLINT
-using ::llround; // NOLINT
-using ::log; // NOLINT
-using ::log10; // NOLINT
-using ::log1p; // NOLINT
-using ::log2; // NOLINT
-using ::logb; // NOLINT
-using ::lrint; // NOLINT
-using ::lround; // NOLINT
-using ::modf; // NOLINT
-using ::nan; // NOLINT
-using ::nanf; // NOLINT
-using ::nearbyint; // NOLINT
-using ::nextafter; // NOLINT
-using ::pow; // NOLINT
-using ::remainder; // NOLINT
-using ::remquo; // NOLINT
-using ::rint; // NOLINT
-using ::round; // NOLINT
-using ::scalbln; // NOLINT
-using ::scalbn; // NOLINT
-using ::signbit; // NOLINT
-using ::sin; // NOLINT
-using ::sinh; // NOLINT
-using ::sqrt; // NOLINT
-using ::tan; // NOLINT
-using ::tanh; // NOLINT
-using ::tgamma; // NOLINT
-using ::trunc; // NOLINT
-
-} // namespace std
 
 //* define cuda libdevice declares
 __DEVICE__ int __nv_abs(int __a);
@@ -1141,8 +897,6 @@ __DEVICE__ int __popc(int __a);
 __DEVICE__ int __popcll(long long __a);
 __DEVICE__ float __powf(float __a, float __b);
 
-// Parameter must have a known integer value.
-#define __prof_trigger(__a) __asm__ __volatile__("pmevent \t%0;" ::"i"(__a))
 __DEVICE__ int __rhadd(int __a, int __b);
 __DEVICE__ unsigned int __sad(int __a, int __b, unsigned int __c);
 __DEVICE__ float __saturatef(float __a);
@@ -1156,9 +910,7 @@ __DEVICE__ int __syncthreads_or(int __a);
 __DEVICE__ float __tanf(float __a);
 __DEVICE__ void __threadfence(void);
 __DEVICE__ void __threadfence_block(void);
-;
 __DEVICE__ void __threadfence_system(void);
-;
 __DEVICE__ void __trap(void);
 __DEVICE__ unsigned int __uAtomicAdd(unsigned int *__p, unsigned int __v);
 __DEVICE__ unsigned int __uAtomicAdd_block(unsigned int *__p, unsigned int __v);
